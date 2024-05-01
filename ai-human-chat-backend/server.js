@@ -58,7 +58,22 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// Additional routes for chat data storage and conversation forking can be added here
+// Route to generate random text
+app.get('/api/random-text', (req, res) => {
+  const randomText = generateRandomText(200); // Generate random text 200 characters long
+  res.json({ text: randomText });
+});
+
+// Function to generate random text of specified length
+function generateRandomText(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ';
+  let randomText = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    randomText += characters.charAt(randomIndex);
+  }
+  return randomText;
+}
 
 // Start the server
 app.listen(PORT, () => {
