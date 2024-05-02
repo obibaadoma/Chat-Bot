@@ -16,4 +16,15 @@ export const registerUser = async (username, email, password) => {
     }
 };
 
+export const sendMessageToChatbot = async (message) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/chatbot/send`, {
+            message
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response.data.error);
+    }
+};
+
 // Define other API request functions here

@@ -1,7 +1,7 @@
 // ChatInterface.js
 import React, { useState } from 'react';
 import ChatMessage from './ChatMessage';
-import { sendMessageToChatbot } from './apiService'; // Import the API service function
+import { sendMessageToChatbot } from '../apiService'; // Import the API service function
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);

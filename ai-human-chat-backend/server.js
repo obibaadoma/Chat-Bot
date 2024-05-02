@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GitHubStrategy = require('passport-github').Strategy;
+const session = require('express-session');
 
 // Import database functions for user operations
 const { createUser, findUserByEmail } = require('./db/users');
@@ -17,12 +19,30 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(bodyParser.json());
+app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Access OAuth credentials
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const githubClientId = process.env.GITHUB_CLIENT_ID;
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
 
 // Google OAuth Strategy
 passport.use(new GoogleStrategy({
-  clientID: 'YOUR_CLIENT_ID',
-  clientSecret: 'YOUR_CLIENT_SECRET',
+  clientID: googleClientId,
+  clientSecret: googleClientSecret,
   callbackURL: '/auth/google/callback'
+}, (accessToken, refreshToken, profile, done) => {
+  // Logic to authenticate user
+}));
+
+// GitHub OAuth Strategy
+passport.use(new GitHubStrategy({
+  clientID: githubClientId,
+  clientSecret: githubClientSecret,
+  callbackURL: '/auth/github/callback'
 }, (accessToken, refreshToken, profile, done) => {
   // Logic to authenticate user
 }));
@@ -34,6 +54,15 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 
 // Callback route after successful Google OAuth authentication
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+  // Logic to handle successful authentication
+  res.redirect('/');
+});
+
+// GitHub OAuth authentication route
+app.get('/auth/github', passport.authenticate('github'));
+
+// Callback route after successful GitHub OAuth authentication
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
   // Logic to handle successful authentication
   res.redirect('/');
 });
